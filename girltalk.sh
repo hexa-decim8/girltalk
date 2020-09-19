@@ -7,20 +7,18 @@ if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
     printf "\n"
 
 #Installing deps
+if (systemctl -q is-active sshd.service)
+then
+    echo "### SSH is Installed And Running! ###"
+else
     echo "### Installing Dependencies ###"
     sudo apt update && sudo apt upgrade
     sudo apt install openssh-server
     printf "\n"
 
-#Starting openssh as a service
-    echo "### Checking For SSH Status ### "
-    if (systemctl -q is-active sshd.service)
-    then
-       echo "### SSH is Installed And Running ###"
-    else
-       echo "### Starting SSH Service & Enabling On Reboot ###"
-       sudo systemctl start ssh && sudo systemctl enable ssh
-    fi
+    echo "### Starting SSH Service & Enabling On Reboot ###"
+    sudo systemctl start ssh && sudo systemctl enable ssh
+fi
     printf "\n"
 
 #Generate local key
