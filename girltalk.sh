@@ -18,7 +18,8 @@ if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
     then
        echo "### SSH is Installed And Running ###"
     else
-       echo "### Starting SSH Service & Enabling On Reboot ###" sudo systemctl start ssh && sudo systemctl enable ssh
+       echo "### Starting SSH Service & Enabling On Reboot ###" 
+       sudo systemctl start ssh && sudo systemctl enable ssh
     fi
     printf "\n"
 
