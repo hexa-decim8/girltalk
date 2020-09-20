@@ -11,6 +11,7 @@ Network Address Translation (NAT).
 ### How does it work? ###
 Girltalk takes advantage of the standard functionality of openssh, but scripts out the process of orchestrating the connection between the "foothold" host to be deployed behind 
 NAT and the "C2" operators have easy ssh access through.
+![example diagram](/images/diagram.png)
 
 ### How do I get set up? ###
 Prior to running girltalk.sh, operators should have a domain name at hand to give to the script to enable the host to access it once it has been put into the NAT'd environment.
