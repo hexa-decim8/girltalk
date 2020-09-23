@@ -2,6 +2,9 @@
 
 GirlTalk is a script for rapidly deploying reverse SSH tunnels to remotely positioned devices.
 
+### Updates ###
+* Added multi-user support
+
 ### What is this repository for? ###
 
 GirlTalk does not use any specialized tools, and utilizes the native functionality of OpenSSH to allow remotely positioned devices to connect back to operator-owned C2
@@ -26,7 +29,10 @@ modified to work in alternative environments as well. Because GirlTalk is a bash
 natively installed Unix installations.
 
 To get started, run girltalk.sh on the host you wish to have call back to your C2. The script will prompt you when information is needed. Be sure to have your C2 login info
-ready before starting girltalk.sh
+ready before starting girltalk.sh.
+
+Girltalk will place an access script onto the C2 host (called 'hmu_user.sh'). Running this newly created script will transfer local ssh keys back to the foothold host and
+immediately return a shell to the foothold.
 
 Once the script is complete, reboot the foothold host. The script is tuned by default to establish a connection to the C2 after 100 seconds.
 
@@ -39,6 +45,6 @@ host!
 Support for GirlTalk will include the following roadmap:
 * More robust DynDNS handling
 * RDP handling
-* Scripting options to allow script fine-tuning
+* Scripting options to allow fine-tuning
 * Stability upgrades
 * multi-foothold handling

