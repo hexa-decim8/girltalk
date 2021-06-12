@@ -1,5 +1,5 @@
 # README #
-![Girltalk](E3kGRY7WEAoMgMS.jpg)
+![Girltalk](/images/E3kGRY7WEAoMgMS.jpg)
 
 GirlTalk is a script for rapidly deploying reverse SSH tunnels to remotely positioned devices.
 
