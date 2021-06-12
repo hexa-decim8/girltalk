@@ -5,6 +5,9 @@ GirlTalk is a script for rapidly deploying reverse SSH tunnels to remotely posit
 ### Updates ###
 * Added multi-user support
 
+### NOTE! ###
+This script does not work cleanly with AWS ssh keys.
+
 ### What is this repository for? ###
 
 GirlTalk does not use any specialized tools, and utilizes the native functionality of OpenSSH to allow remotely positioned devices to connect back to operator-owned C2
