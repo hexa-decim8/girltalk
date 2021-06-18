@@ -78,6 +78,10 @@ elif [ -z ${HOST+x} ]; then
 	exit
 fi
 
+if [ ${AWS} = true]; then
+	echo "it works!"
+fi
+
 #Check for connectivity
 echo "### Checking For Internet ###"
 if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
