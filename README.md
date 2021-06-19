@@ -47,8 +47,10 @@ host!
 
 ### Future features ###
 Support for GirlTalk will include the following roadmap:
+* AWS support
 * More robust DynDNS handling
 * RDP handling
 * Scripting options to allow fine-tuning
 * Stability upgrades
 * multi-foothold handling
+* multi-user handling
