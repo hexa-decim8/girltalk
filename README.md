@@ -30,7 +30,7 @@ functionality may change in a future release, but girltalk was build with this u
 
 GirlTalk is a simple script that automates the reverse SSH tunnel setup process. The script has been developed and tested in Debian derivative environments, but can easily be
 modified to work in alternative environments as well. Because GirlTalk is a bash script, it is highly portable and adaptable from build-to-build and runs almost entirely with
-natively installed Unix installations.
+easy to port to native Unix installations.
 
 To get started, run girltalk.sh on the host you wish to have call back to your C2. The script will prompt you when information is needed. Be sure to have your C2 login info
 ready before starting girltalk.sh.
@@ -47,9 +47,15 @@ host!
 
 ### Future features ###
 Support for GirlTalk will include the following roadmap:
+* Add support for new methods of reverse ssh (autossh)
+* Added user versatility
+* Keysize customization
 * More robust DynDNS handling
 * RDP handling
+* Scripting options to allow fine-tuning (currently in development!)
+** disable local SSH server 
+* Stability upgrades (currently in development!)
+* multi-foothold handling
 * Scripting options to allow fine-tuning
 * Stability upgrades
 * multi-foothold handling
-
