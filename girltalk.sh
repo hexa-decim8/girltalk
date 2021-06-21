@@ -17,12 +17,12 @@ Flags:
   -a	Specify AWS C2 infrastructure.
   -k    SSH key.
   -n    Password-based C2 access.
-  -c    C2 host <ip address or routable hostname>.
+  -c    C2 host
   -u	C2 username.
   -l    Local username to use.
   -h	Help text and usage example.
-usage:	 girltalk.sh -c <C2 username> -l <local username> 
-example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface
+usage:	 girltalk.sh -c <C2 hostname or IP> -l <local username> -u <C2 username> 
+example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface -a -k ~/.ssh/amazon.keypair.pem
 "
 
 # Check if any flags were set. If not, print out help.
