@@ -56,3 +56,6 @@ Support for GirlTalk will include the following roadmap:
 ** disable local SSH server 
 * Stability upgrades (currently in development!)
 * multi-foothold handling
+* Scripting options to allow fine-tuning
+* Stability upgrades
+* multi-foothold handling
