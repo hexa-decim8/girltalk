@@ -17,16 +17,22 @@ USAGE="
 A bash script to automate reverse reverse ssh tunnels. Handy for callbacks
 through NAT.
 girltalk.sh:
-  -a	Specify AWS C2 infrastructure.
+  -a	Use AWS C2 infrastructure.
   -s    Use autossh method (more stable)
   -k    SSH key.
-  -c    C2 host
+  -c    C2 host.
   -u	C2 username.
   -l    Local username to use.
   -h	Help text and usage example.
 usage:	 girltalk.sh -c <C2 hostname/IP> -l <local_username> -u <C2_username> 
 example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface -a -k ~/.ssh/amazon.keypair.pem
 "
+
+
+# AWS infrastructure selection
+if [ -a -eq 1 ]; then
+        echo "sanity check"
+        exit
 
 
 # Check if any flags were set. If not, print out help.
