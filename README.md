@@ -60,3 +60,6 @@ Support for GirlTalk will include the following roadmap:
 * Scripting options to allow fine-tuning
 * Stability upgrades
 * multi-foothold handling
+
+### Thanks to ###
+@TinkerSec who let me steal the option code.
