@@ -5,6 +5,7 @@ GirlTalk is a script for rapidly deploying reverse SSH tunnels to remotely posit
 
 ### Updates ###
 * Added multi-user support
+* Scripting options to allow fine-tuning & easier operation
 
 ### NOTE! ###
 This script does not work cleanly with AWS ssh keys (yet).
@@ -52,10 +53,8 @@ Support for GirlTalk will include the following roadmap:
 * Keysize customization
 * More robust DynDNS handling
 * RDP handling
-* Scripting options to allow fine-tuning (currently in development!)
 ** disable local SSH server 
 * Stability upgrades (currently in development!)
 * multi-foothold handling
-* Scripting options to allow fine-tuning
 * Stability upgrades
-* multi-foothold handling
+* multi-foothold handling (Look out for news on ChurchInTheWild..coming soon!)
