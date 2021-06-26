@@ -116,18 +116,9 @@ fi
 # Error checking for user input
     until id "$USERLOCAL" >/dev/null; do
         echo "Please enter your local username";
-    done
     printf "\n"
-
-
-# Transfer local key to C2
-    echo "${bold}### Copying key to C2 host ###"
-    ssh-copy-id $HOST
-    printf "\n"
-
-
-# Generating an ssh key on your C2
-    ssh $HOST 'ssh-keygen'
+    exit
+done
 
 ########################################################
 # AWS infrastructure selection                         #
@@ -136,9 +127,24 @@ fi
 ########################################################
 
 if [ -a ${AWS+x}]; then
-ssh -i ${KEYNAME} 
+#ssh -i ${KEYNAME} ${USERC2}@${AWS}
 
+# Transferring local key to C2
+    echo "${bold}### Copying key to C2 host ###"
+    scp ~/.ssh/id_rsa.pub ${USERC2}@{AWS}:/home/${USERC2}/.ssh/
+    printf "\n"
 else
+
+# Transferring local key to C2
+    echo "${bold}### Copying key to C2 host ###"
+    ssh-copy-id $HOST
+    printf "\n"
+
+
+
+# Generating an ssh key on your C2
+    ssh $HOST 'ssh-keygen'
+
 
 # Creating hmu.sh, which should be run on the C2 host. This file transfers the C2 key back to the host and attaches to the SSH session.
     echo "${bold}### Creating & transferring remote connection script ###"
