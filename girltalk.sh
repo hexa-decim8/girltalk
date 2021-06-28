@@ -131,7 +131,7 @@ if [ -a ${AWS+x}]; then
 
 # Transferring local key to C2
     echo "${bold}### Copying key to C2 host ###"
-    scp ~/.ssh/id_rsa.pub ${USERC2}@{AWS}:/home/${USERC2}/.ssh/
+    scp ~/.ssh/id_rsa.pub -i ${KEY} ${USERC2}@{AWS}:/home/${USERC2}/.ssh/
     printf "\n"
 else
 
