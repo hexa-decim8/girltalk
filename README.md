@@ -6,9 +6,11 @@ GirlTalk is a script for rapidly deploying reverse SSH tunnels to remotely posit
 ### Updates ###
 * Added multi-user support
 * Scripting options to allow fine-tuning & easier operation
+* Girltalk now supports AWS C2 deployments with the -a option
 
 ### NOTE! ###
-This script does not work cleanly with AWS ssh keys (yet).
+This tool is freely licensed but I do not take any responsibility for whatever you choose to do with this.
+Therefore, only use this tool in association with systems and networks you have explicit permission to operate on!
 
 ### What is this repository for? ###
 
@@ -48,12 +50,11 @@ host!
 
 ### Future features ###
 Support for GirlTalk will include the following roadmap:
-* Add support for new methods of reverse ssh (autossh)
+* Add support for new methods of reverse ssh (autossh) - Next up!
 * Added user versatility
 * Keysize customization
 * More robust DynDNS handling
 * RDP handling 
-* Stability upgrades (currently in development!)
 * multi-foothold handling
 * Stability upgrades
 * multi-foothold handling (Look out for news on ChurchInTheWild..coming soon!)
