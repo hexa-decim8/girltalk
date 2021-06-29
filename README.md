@@ -13,11 +13,11 @@ This script does not work cleanly with AWS ssh keys (yet).
 ### What is this repository for? ###
 
 GirlTalk does not use any specialized tools, and utilizes the native functionality of OpenSSH to allow remotely positioned devices to connect back to operator-owned C2
-infrastructure. This removes any ambiguity about connecting to infrastructure where a route is not easily accessible, such as when a device needs to be accessible behind 
+infrastructure. This removes any ambiguity about connecting to infrastructure where a route is not easily accessible, such as when a device needs to be accessible behind
 Network Address Translation (NAT).
 
 ### How does it work? ###
-Girltalk takes advantage of the standard functionality of openssh, but scripts out the process of orchestrating the connection between the "foothold" host to be deployed behind 
+Girltalk takes advantage of the standard functionality of openssh, but scripts out the process of orchestrating the connection between the "foothold" host to be deployed behind
 NAT and the "C2" operators have easy ssh access through.
 ![example diagram](/images/diagram.png)
 
@@ -52,8 +52,7 @@ Support for GirlTalk will include the following roadmap:
 * Added user versatility
 * Keysize customization
 * More robust DynDNS handling
-* RDP handling
-** disable local SSH server 
+* RDP handling 
 * Stability upgrades (currently in development!)
 * multi-foothold handling
 * Stability upgrades
