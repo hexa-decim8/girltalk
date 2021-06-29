@@ -52,8 +52,7 @@ Support for GirlTalk will include the following roadmap:
 * Added user versatility
 * Keysize customization
 * More robust DynDNS handling
-* RDP handling
-** disable local SSH server
+* RDP handling 
 * Stability upgrades (currently in development!)
 * multi-foothold handling
 * Stability upgrades
