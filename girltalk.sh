@@ -7,7 +7,8 @@
 # Once complete, the device will automatically attempt a       #
 # connection when the device reboots                           #
 #                                                              #
-# xoxo Hexadecim8 did this xoxo                                #
+# xoxo Hexadecim8 did this w/PR from:                          #
+#        https://github.com/Lijantropiquexoxo                  #
 #                                                              #
 ################################################################
 
@@ -139,9 +140,8 @@ done
 if [ ${AWS} -eq 1 ]; then
 
 
-# Transferring local key to C2
+# Transferring local key to C2. Using scp to transfer key as there is no option to transfer w/key with scp-copy-id.
     echo "${bold}### Copying key to C2 host ###"
-    echo "${USERLOCAL}, ${KEY}, ${USERC2}, ${HOST}"
     scp -i ${KEY} /home/${USERLOCAL}/.ssh/id_rsa.pub ${USERC2}@${HOST}:/home/${USERC2}/.ssh/
     printf "\n"
 
@@ -253,6 +253,8 @@ SSH_OPTIONS="-N -o 'ServerAliveInterval 60' -o 'ServerAliveCountMax 3' -o 'Stric
 ____HERE
 
 cat > /lib/systemd/system/autossh.service <<HEREDOC
+
+# This is the systemd file that will be added
 #############################################
 [Unit]
 Description=autossh
@@ -288,12 +290,18 @@ systemctl enable autossh
 systemctl start autossh
 
 
+####################################################################
+#								   #
+# If not usuing Autossh or AWS, script falls to this part of code! #
+#								   #
+####################################################################
+
+
 else
 # Transferring local key to C2
     echo "${bold}### Copying key to C2 host ###"
     ssh-copy-id $HOST
     printf "\n"
-
 
 
 # Generating an ssh key on your C2
