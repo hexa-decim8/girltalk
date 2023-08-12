@@ -21,12 +21,12 @@ Girltalk will give operators a route to a deivce that is not easily accessible, 
 ### USAGE ###
 Girltalk is currently compatible with the following options:
 Key/Cert Mode options:
-  -a	Boolean option for keyed C2 infrastructure (This option has been tested with AWS as the C2)
+  -a	  Boolean option for keyed C2 infrastructure (This option has been tested with AWS as the C2)
   -k    Full path of SSH key
 
 Password Mode options:
   -c    C2 host
-  -u	C2 username
+  -u	  C2 username
   -l    Local username to use
 
 usage:	 girltalk.sh -c <C2 hostname/IP> -l <local_username> -u <C2_username>
@@ -48,9 +48,3 @@ immediately return a shell for the foothold device.
 When girltalk.sh is done, a new script will be made available in the root directory of the C2 host called 'hmu.sh'. Run this script from the C2 host, input the password for
 the account specified during girltalk runtime and you should have a shell on the remotely deployed foothold host without needing any unknown routing information from the foothold
 host!
-
-### Feature Roadmap ###
-* Add support for new methods of reverse ssh (will add greater stability with autossh) - Next up!
-* Added user versatility
-* Keysize customization
-* multi-foothold handling (Look out for news on ChurchInTheWild..coming soon!)
