@@ -26,9 +26,9 @@ Key/Cert Mode options:
 
 Password Mode options:
 ```
-  -c    C2 host
-  -u	  C2 username
-  -l    Local username to use
+  -c  C2 host
+  -u  C2 username
+  -l  Local username to use
 
 usage:	 girltalk.sh -c <C2 hostname/IP> -l <local_username> -u <C2_username>
 example: girltalk.sh -c host.aws.com -u ubuntu -l hatchetface -a -k ~/.ssh/amazon-keypair.pem
