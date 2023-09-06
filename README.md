@@ -20,8 +20,8 @@ Girltalk will give operators a route to a deivce that is not easily accessible, 
 Girltalk is currently compatible with the following options:
 Key/Cert Mode options:
 ```
-  -a	  Boolean option for keyed C2 infrastructure (This option has been tested with AWS as the C2)
-  -k    Full path of SSH key
+  -a  Boolean option for keyed C2 infrastructure (This option has been tested with AWS as the C2)
+  -k  Full path of SSH key
 ```
 
 Password Mode options:
