@@ -36,12 +36,57 @@ if [ $# -eq 0 ]; then
 	exit
 fi
 
+# Function to check dependencies
+check_dependencies() {
+    echo "${bold}### Checking Dependencies ###"
+    if ! command -v ssh &>/dev/null; then
+        echo "SSH is not installed. Installing..."
+        sudo apt update && sudo apt install -y openssh-client
+    fi
+    if ! command -v ssh-keygen &>/dev/null; then
+        echo "ssh-keygen is not installed. Installing..."
+        sudo apt install -y openssh-server
+    fi
+    if ! command -v autossh &>/dev/null && [ "$USE_AUTOSSH" -eq 1 ]; then
+        echo "autossh is not installed. Installing..."
+        sudo apt install -y autossh
+    fi
+    echo "${bold}### Dependencies Checked ###"
+}
+
+# Function to generate SSH key
+generate_ssh_key() {
+    if [ ! -f "$HOME/.ssh/id_rsa" ]; then
+        echo "${bold}### Generating SSH Keypair ###"
+        ssh-keygen -b 4096 -f "$HOME/.ssh/id_rsa" -N ""
+    else
+        echo "${bold}### SSH Keypair Already Exists ###"
+    fi
+}
+
+# Function to setup reverse SSH tunnel
+setup_reverse_ssh() {
+    local method=$1
+    echo "${bold}### Setting Up Reverse SSH Tunnel ###"
+    if [ "$method" == "autossh" ]; then
+        echo "@reboot autossh -M 0 -f -N -R 43022:localhost:22 ${USERC2}@${HOST}" >> cronsh
+    else
+        echo "@reboot sleep 100 && ssh -f -N -R 43022:localhost:22 ${USERC2}@${HOST}" >> cronsh
+    fi
+    sudo crontab cronsh
+    rm cronsh
+    echo "${bold}### Reverse SSH Tunnel Setup Complete ###"
+}
+
 # Set flags.
-while getopts "ahk:c:u:l:" FLAG
+while getopts "ahsk:c:u:l:" FLAG
 do
 	case $FLAG in
 		a)
 			AWS=1
+			;;
+		s)
+			USE_AUTOSSH=1
 			;;
 		k)
 			KEY="$OPTARG"
@@ -86,25 +131,9 @@ if ping -q -c 1 -W 1 1.1.1.1 >/dev/null; then
     echo "${bold}### IPv4 is up! ###"
     printf "\n"
 
-# Installing deps
-if (systemctl -q is-active sshd.service)
-then
-    echo "${bold}### SSH is Installed And Running! ###"
-    printf "\n"
-else
-    echo "${bold}### Installing Dependencies ###"
-    sudo apt update && sudo apt upgrade
-    sudo apt install openssh-server
-    printf "\n"
-    echo "${bold}### Starting SSH Service & Enabling On Reboot ###"
-    sudo systemctl start ssh && sudo systemctl enable ssh
-fi
-    printf "\n"
-
-# Generate local key
-    echo "${bold}### Generating 4096 keypair ###"
-    ssh-keygen -b 4096
-    printf "\n"
+# Main script logic
+check_dependencies
+generate_ssh_key
 
 # Error checking for user input
     until id "$USERLOCAL" >/dev/null; do
@@ -165,10 +194,7 @@ else
     printf "\n"
 
 # Setup local cron job + cleanup
-    echo "${bold}### Setting up local cronjob ###"
-    echo "@reboot sleep 100 && sudo ssh -f -N -R 43022:localhost:22 ${HOST}" >> cronsh
-    sudo crontab cronsh
-    rm cronsh
+    setup_reverse_ssh "${USE_AUTOSSH:+autossh}"
     printf "\n"
     exit
 fi
